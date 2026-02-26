@@ -1,89 +1,32 @@
+const sheetID="1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk";
+const sheetName="보고양식";
+
+const url=`https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+
 let forms=[];
 
-fetch(API_URL)
+fetch(url)
 .then(r=>r.json())
 .then(data=>{
-forms=data;
-init();
-});
 
-function init(){
+forms=data.map(row=>({
+title:row.title||"",
+category:row.category||"기타",
+content:row.template||"",
+keywords:row.keywords||""
+}));
 
 renderFolders();
-renderRecent();
-
-document.getElementById("search").addEventListener("input",search);
-document.getElementById("search").focus();
-}
-
-/* 검색 */
-
-function search(){
-
-const q=document.getElementById("search").value.toLowerCase();
-const box=document.getElementById("searchResults");
-
-box.innerHTML="";
-
-if(!q) return;
-
-forms
-.filter(f=>f.title.toLowerCase().includes(q))
-.forEach(f=>{
-
-const div=document.createElement("div");
-div.className="result";
-div.innerText=f.title;
-
-div.onclick=()=>{
-showPreview(f);
-addRecent(f);
-};
-
-box.appendChild(div);
-
 });
-}
 
-/* preview */
 
-let currentText="";
 
-function showPreview(f){
-
-currentText=f.content;
-
-document.getElementById("previewTitle").innerText=f.title;
-document.getElementById("previewContent").innerText=f.content;
-}
-
-/* modal */
-
-function openModal(){
-
-document.getElementById("modal").style.display="flex";
-
-document.getElementById("modalTitle").innerText=
-document.getElementById("previewTitle").innerText;
-
-document.getElementById("modalContent").innerText=currentText;
-}
-
-function closeModal(){
-document.getElementById("modal").style.display="none";
-}
-
-/* copy */
-
-function copyText(){
-navigator.clipboard.writeText(currentText);
-}
-
-/* folders */
+/* 폴더 */
 
 function renderFolders(){
 
 const box=document.getElementById("folders");
+box.innerHTML="";
 
 const categories={};
 
@@ -115,10 +58,7 @@ const item=document.createElement("div");
 item.className="folderItem";
 item.innerText=f.title;
 
-item.onclick=()=>{
-showPreview(f);
-addRecent(f);
-};
+item.onclick=()=>showModal(f);
 
 items.appendChild(item);
 
@@ -129,46 +69,78 @@ folder.appendChild(items);
 box.appendChild(folder);
 
 }
+
 }
 
-/* 최근 */
 
-function addRecent(f){
 
-let recent=JSON.parse(localStorage.getItem("recent")||"[]");
+/* 검색 */
 
-recent=recent.filter(x=>x.title!==f.title);
-recent.unshift(f);
+document.getElementById("search").addEventListener("input",e=>{
 
-if(recent.length>5) recent.pop();
-
-localStorage.setItem("recent",JSON.stringify(recent));
-
-renderRecent();
-}
-
-function renderRecent(){
-
-const box=document.getElementById("recent");
-
-if(!box) return;
-
-let recent=JSON.parse(localStorage.getItem("recent")||"[]");
+const q=e.target.value.toLowerCase();
+const box=document.getElementById("searchResults");
 
 box.innerHTML="";
 
-recent.forEach(f=>{
+if(!q) return;
+
+forms
+.filter(f=>
+(f.title+f.category+f.keywords)
+.toLowerCase()
+.includes(q)
+)
+.forEach(f=>{
 
 const div=document.createElement("div");
-div.className="simpleCard";
-div.innerText=f.title;
+div.className="card";
 
-div.onclick=()=>showPreview(f);
+div.innerHTML=`
+<div class="cardTitle">${f.title}</div>
+<div class="cardCategory">${f.category}</div>
+`;
+
+div.onclick=()=>showModal(f);
 
 box.appendChild(div);
 
 });
+
+});
+
+
+
+/* 모달 */
+
+function showModal(f){
+
+document.getElementById("modalTitle").innerText=f.title;
+document.getElementById("modalContent").innerText=f.content;
+
+window.currentCopy=f.content;
+
+document.getElementById("modal").style.display="flex";
+
 }
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
+}
+
+
+
+/* 복사 */
+
+function copyText(){
+
+navigator.clipboard.writeText(window.currentCopy);
+
+alert("복사 완료");
+
+}
+
+
 
 /* 다크모드 */
 
@@ -187,6 +159,8 @@ document.body.classList.contains("dark")?"1":"0"
 );
 
 };
+
+
 
 /* ESC */
 
