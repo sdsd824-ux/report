@@ -1,158 +1,143 @@
-const sheetID = "1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk";
-const sheetName = "보고양식";
+let forms=[];
 
-const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
-
-let forms = [];
-
-fetch(url)
+fetch(API_URL)
 .then(r=>r.json())
 .then(data=>{
-
-forms = data.map(row=>({
-title: row.title || "",
-category: row.category || "기타",
-keywords: row.keywords || "",
-content: row.template || ""
-}));
-
-makeFolders();
-
+forms=data;
+init();
 });
 
+function init(){
 
-/* 폴더 생성 */
+renderFolders();
+renderRecent();
 
-function makeFolders(){
-
-const box = document.getElementById("folders");
-
-const categories = [...new Set(forms.map(f=>f.category))];
-
-box.innerHTML="";
-
-categories.forEach(cat=>{
-
-const folder = document.createElement("div");
-folder.className="folder";
-
-const title = document.createElement("div");
-title.className="folderTitle";
-title.innerText="📁 "+cat;
-
-const items = document.createElement("div");
-items.className="folderItems";
-
-forms
-.filter(f=>f.category===cat)
-.forEach(f=>{
-
-const item = document.createElement("div");
-item.className="folderItem";
-item.innerText=f.title;
-
-item.onclick=()=>showPreview(f);
-
-items.appendChild(item);
-
-});
-
-title.onclick=()=>{
-items.style.display =
-items.style.display==="block"?"none":"block";
-};
-
-folder.appendChild(title);
-folder.appendChild(items);
-
-box.appendChild(folder);
-
-});
-
+document.getElementById("search").addEventListener("input",search);
+document.getElementById("search").focus();
 }
-
 
 /* 검색 */
 
-document.getElementById("search").addEventListener("input",e=>{
+function search(){
 
-const q = e.target.value.toLowerCase();
+const q=document.getElementById("search").value.toLowerCase();
+const box=document.getElementById("searchResults");
 
-const results = document.getElementById("searchResults");
+box.innerHTML="";
 
-if(!q){
-results.innerHTML="";
-return;
-}
+if(!q) return;
 
-const filtered = forms.filter(f=>
-(f.title+f.category+f.keywords+f.content)
-.toLowerCase()
-.includes(q)
-);
+forms
+.filter(f=>f.title.toLowerCase().includes(q))
+.forEach(f=>{
 
-results.innerHTML="";
-
-filtered.forEach(f=>{
-
-const div = document.createElement("div");
-div.className="searchCard";
+const div=document.createElement("div");
+div.className="result";
 div.innerText=f.title;
 
-div.onclick=()=>showPreview(f);
+div.onclick=()=>{
+showPreview(f);
+addRecent(f);
+};
 
-results.appendChild(div);
+box.appendChild(div);
 
 });
+}
 
-});
+/* preview */
 
-
-/* 미리보기 */
+let currentText="";
 
 function showPreview(f){
 
-const modal = document.getElementById("modal");
+currentText=f.content;
 
-document.getElementById("modalTitle").innerText=f.title;
-document.getElementById("modalContent").innerText=f.content;
+document.getElementById("previewTitle").innerText=f.title;
+document.getElementById("previewContent").innerText=f.content;
+}
 
-window.currentCopy=f.content;
+/* modal */
 
-modal.style.display="flex";
+function openModal(){
 
+document.getElementById("modal").style.display="flex";
+
+document.getElementById("modalTitle").innerText=
+document.getElementById("previewTitle").innerText;
+
+document.getElementById("modalContent").innerText=currentText;
 }
 
 function closeModal(){
 document.getElementById("modal").style.display="none";
 }
 
+/* copy */
+
 function copyText(){
-
-navigator.clipboard.writeText(window.currentCopy);
-
-closeModal();
-
-alert("복사 완료");
-
+navigator.clipboard.writeText(currentText);
 }
-/* 자동 포커스 */
-document.getElementById("search").focus();
 
-/* Enter → 첫 결과 열기 */
-document.getElementById("search").addEventListener("keydown",e=>{
-if(e.key==="Enter"){
-const first=document.querySelector("#searchResults .simpleCard");
-if(first) first.click();
-}
+/* folders */
+
+function renderFolders(){
+
+const box=document.getElementById("folders");
+
+const categories={};
+
+forms.forEach(f=>{
+if(!categories[f.category]) categories[f.category]=[];
+categories[f.category].push(f);
 });
 
-/* 최근 사용 */
+for(let c in categories){
+
+const folder=document.createElement("div");
+folder.className="folder";
+
+const title=document.createElement("div");
+title.className="folderTitle";
+title.innerText="📁 "+c;
+
+const items=document.createElement("div");
+items.className="folderItems";
+
+title.onclick=()=>{
+items.style.display=
+items.style.display==="block"?"none":"block";
+};
+
+categories[c].forEach(f=>{
+
+const item=document.createElement("div");
+item.className="folderItem";
+item.innerText=f.title;
+
+item.onclick=()=>{
+showPreview(f);
+addRecent(f);
+};
+
+items.appendChild(item);
+
+});
+
+folder.appendChild(title);
+folder.appendChild(items);
+box.appendChild(folder);
+
+}
+}
+
+/* 최근 */
+
 function addRecent(f){
 
 let recent=JSON.parse(localStorage.getItem("recent")||"[]");
 
-recent=recent.filter(r=>r.title!==f.title);
+recent=recent.filter(x=>x.title!==f.title);
 recent.unshift(f);
 
 if(recent.length>5) recent.pop();
@@ -165,6 +150,7 @@ renderRecent();
 function renderRecent(){
 
 const box=document.getElementById("recent");
+
 if(!box) return;
 
 let recent=JSON.parse(localStorage.getItem("recent")||"[]");
@@ -172,24 +158,38 @@ let recent=JSON.parse(localStorage.getItem("recent")||"[]");
 box.innerHTML="";
 
 recent.forEach(f=>{
+
 const div=document.createElement("div");
 div.className="simpleCard";
 div.innerText=f.title;
+
 div.onclick=()=>showPreview(f);
+
 box.appendChild(div);
+
 });
 }
 
-renderRecent();
+/* 다크모드 */
 
-/* showPreview 안에 이 줄 추가 */
-const originalShowPreview=showPreview;
-showPreview=function(f){
-originalShowPreview(f);
-addRecent(f);
-}
+const toggle=document.getElementById("darkToggle");
 
-/* ESC 닫기 */
+if(localStorage.getItem("dark")==="1")
+document.body.classList.add("dark");
+
+toggle.onclick=()=>{
+
+document.body.classList.toggle("dark");
+
+localStorage.setItem(
+"dark",
+document.body.classList.contains("dark")?"1":"0"
+);
+
+};
+
+/* ESC */
+
 document.addEventListener("keydown",e=>{
 if(e.key==="Escape") closeModal();
 });
