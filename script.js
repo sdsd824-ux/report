@@ -38,7 +38,8 @@ const div = document.createElement("div");
 div.className="card";
 
 div.innerHTML = `
-<b>${f.title}</b>
+<div class="cardTitle">${f.title}</div>
+<div class="cardCategory">${f.category}</div>
 `;
 
 div.onclick=()=>{
@@ -51,22 +52,19 @@ return div;
 
 function showPreview(f){
 
-const results = document.getElementById("results");
+const modal = document.getElementById("modal");
 
-results.innerHTML = `
-<div class="preview">
-
-<b>${f.title}</b>
-
-<pre>${f.content}</pre>
-
-<button onclick="copyText()">복사</button>
-
-</div>
-`;
+document.getElementById("modalTitle").innerText = f.title;
+document.getElementById("modalContent").innerText = f.content;
 
 window.currentCopy = f.content;
 
+modal.style.display = "flex";
+
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
 }
 
 function copyText(){
@@ -75,12 +73,15 @@ const text = window.currentCopy;
 
 const ta = document.createElement("textarea");
 ta.value=text;
+
 document.body.appendChild(ta);
 ta.select();
 document.execCommand("copy");
 ta.remove();
 
-alert("복사됨");
+closeModal();
+
+alert("복사 완료");
 
 }
 
