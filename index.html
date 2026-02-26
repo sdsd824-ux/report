@@ -2,29 +2,37 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>보고 양식 검색</title>
+<title>보고서 양식</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header class="topBar">
-<h1>📋 보고 양식</h1>
+<div class="hero">
 
-<input id="search" placeholder="보고양식 검색">
-<button id="darkToggle">🌙</button>
-</header>
+<h1>📋 보고서 양식 조회</h1>
 
+<input id="search" placeholder="보고 양식 검색..." autocomplete="off">
 
-<!-- 검색결과 -->
-<div id="searchResults" class="grid"></div>
+<div id="searchResults"></div>
+
+</div>
 
 
 <div class="container">
 
-<section class="cardSection">
+<section id="recentSection" class="cardSection">
+<h2>🕒 최근 사용</h2>
+<div id="recent"></div>
+</section>
 
-<h2>🤖 AI 보고문장 만들기</h2>
+<section class="cardSection">
+<h2>📚 전체 보고 양식</h2>
+<div id="folders"></div>
+</section>
+
+<section class="cardSection">
+<h2>🤖 AI 보고 문장 만들기</h2>
 
 <div class="aiBox">
 <textarea id="aiInput" placeholder="내용 입력"></textarea>
@@ -32,38 +40,21 @@
 </div>
 
 <div id="aiResult" class="preview"></div>
-
-</section>
-
-
-<section class="cardSection">
-
-<h2>📚 전체 보고양식</h2>
-<div id="folders"></div>
-
 </section>
 
 </div>
 
 
-
-<!-- 미리보기 -->
-
+<!-- 모달 -->
 <div id="modal" class="modal">
-
 <div class="modalBox">
-
 <div id="modalTitle" class="modalTitle"></div>
-
 <pre id="modalContent"></pre>
-
 <div class="modalButtons">
 <button onclick="copyText()">복사</button>
 <button onclick="closeModal()">닫기</button>
 </div>
-
 </div>
-
 </div>
 
 <script src="script.js"></script>
