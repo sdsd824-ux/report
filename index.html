@@ -1,35 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>보고 도우미</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>보고 시스템</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>📋 보고 양식 찾기</h1>
+  <h2>📋 보고양식 찾기</h2>
+  <input id="search" placeholder="결제 / 견적 / 업무">
+  <div id="results"></div>
 
-<input type="text" id="search" placeholder="결제 / 견적 / 업무">
+  <h2>🤖 AI 보고문장 만들기</h2>
+  <textarea id="aiInput"></textarea>
+  <button id="aiBtn">문장 정리</button>
+  <div id="aiResult" class="preview"></div>
 
-<div id="results"></div>
+  <h2>📚 전체 보고양식</h2>
+  <div id="allForms"></div>
 
-<hr>
-
-<h2>🤖 AI 보고문장 만들기</h2>
-
-<textarea id="aiInput" placeholder="대충 상황 입력"></textarea>
-<br>
-<button onclick="makeAI()">문장 정리</button>
-
-<pre id="aiResult"></pre>
-
-<hr>
-
-<h2>📚 전체 보고양식</h2>
-
-<div id="allTemplates"></div>
-
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
