@@ -1,144 +1,175 @@
 body{
-font-family:system-ui;
-background:#f6f8fc;
 margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:#f8f9fc;
+color:#222;
 }
 
-body.dark{
-background:#111;
-color:white;
+/* HERO */
+
+.hero{
+text-align:center;
+padding:100px 20px 60px;
 }
 
-.topBar{
-display:flex;
-gap:10px;
-align-items:center;
-padding:20px;
+.hero h1{
+font-size:38px;
+margin-bottom:30px;
 }
 
-#search{
-flex:1;
-padding:10px;
-font-size:16px;
-border-radius:8px;
-border:1px solid #ccc;
+.hero input{
+width:600px;
+max-width:90%;
+padding:18px 22px;
+font-size:20px;
+border-radius:40px;
+border:1px solid #ddd;
+box-shadow:0 8px 25px rgba(0,0,0,0.08);
+outline:none;
+transition:0.2s;
 }
 
-#darkToggle{
-padding:8px 12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
+.hero input:focus{
+border:1px solid #4c7cf0;
+box-shadow:0 12px 30px rgba(0,0,0,0.15);
 }
+
+#searchResults{
+max-width:600px;
+margin:20px auto 0;
+text-align:left;
+}
+
+/* 섹션 */
 
 .container{
-max-width:1100px;
+max-width:1000px;
 margin:auto;
+padding:20px 20px 80px;
 }
 
 .cardSection{
-margin-top:40px;
+margin-top:60px;
 }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-gap:10px;
-padding:20px;
+.cardSection h2{
+margin-bottom:15px;
 }
 
-.card{
+/* 카드 */
+
+.simpleCard{
 background:white;
-padding:14px;
-border-radius:10px;
+padding:14px 16px;
+border-radius:14px;
+margin-bottom:10px;
 cursor:pointer;
-border:1px solid #eee;
+box-shadow:0 4px 14px rgba(0,0,0,0.08);
+transition:0.15s;
 }
 
-body.dark .card{
-background:#1e1e1e;
-border:1px solid #333;
+.simpleCard:hover{
+transform:translateY(-2px);
+box-shadow:0 6px 18px rgba(0,0,0,0.12);
 }
 
-.cardTitle{
-font-weight:600;
-}
-
-.cardCategory{
-font-size:12px;
-opacity:0.6;
-}
+/* 폴더 */
 
 .folder{
-margin-bottom:14px;
+background:white;
+border-radius:16px;
+padding:16px;
+margin-bottom:16px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .folderTitle{
-font-weight:700;
+font-weight:600;
 cursor:pointer;
-padding:10px;
-background:#ececec;
-border-radius:8px;
-}
-
-body.dark .folderTitle{
-background:#222;
 }
 
 .folderItems{
+margin-top:12px;
 display:none;
-padding:10px;
 }
 
 .folderItem{
-padding:6px;
+padding:10px;
+border-radius:8px;
 cursor:pointer;
-border-radius:6px;
 }
 
 .folderItem:hover{
-background:#ddd;
+background:#f1f4ff;
 }
 
-body.dark .folderItem:hover{
-background:#333;
+/* AI */
+
+.aiBox{
+display:flex;
+gap:10px;
 }
 
-/* modal */
+textarea{
+flex:1;
+height:120px;
+padding:14px;
+border-radius:12px;
+border:1px solid #ddd;
+resize:none;
+}
+
+button{
+background:#4c7cf0;
+color:white;
+border:none;
+border-radius:12px;
+padding:12px 18px;
+cursor:pointer;
+}
+
+.preview{
+margin-top:15px;
+background:white;
+padding:18px;
+border-radius:14px;
+white-space:pre-wrap;
+box-shadow:0 4px 14px rgba(0,0,0,0.08);
+}
+
+/* 모달 */
 
 .modal{
-display:none;
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,0.45);
+display:none;
 align-items:center;
 justify-content:center;
 }
 
 .modalBox{
 background:white;
-padding:25px;
-border-radius:12px;
-width:500px;
-max-width:90%;
+padding:30px;
+border-radius:16px;
+width:90%;
+max-width:550px;
+max-height:80vh;
+overflow:auto;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
-body.dark .modalBox{
-background:#1e1e1e;
+.modalTitle{
+font-size:22px;
+font-weight:700;
+margin-bottom:12px;
 }
 
 .modalButtons{
-margin-top:15px;
+margin-top:20px;
 display:flex;
 gap:10px;
-}
-
-.preview{
-background:#eee;
-padding:10px;
-border-radius:8px;
-margin-top:10px;
 }
