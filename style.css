@@ -1,69 +1,153 @@
 body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#f5f6fa;
 letter-spacing:-0.2px;
 }
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>보고 시스템</title>
-<link rel="stylesheet" href="style.css">
-</head>
 
-<body>
+/* 상단바 */
 
-<header class="topBar">
-  <h1>📋 보고 시스템</h1>
-  <input id="search" placeholder="보고서 검색 (결제 / 견적 / 환자복)">
-</header>
+.topBar{
+background:white;
+padding:14px 20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+box-shadow:0 2px 8px rgba(0,0,0,0.06);
+position:sticky;
+top:0;
+z-index:10;
+}
 
-
-<div class="container">
-
-<section class="cardSection">
-
-<h2>🤖 AI 보고문장 만들기</h2>
-
-<div class="aiBox">
-<textarea id="aiInput" placeholder="내용을 입력하면 보고 문장으로 정리됩니다"></textarea>
-<button id="aiBtn">AI 정리</button>
-</div>
-
-<div id="aiResult" class="preview"></div>
-
-</section>
+.topBar input{
+width:280px;
+padding:8px 10px;
+font-size:14px;
+border-radius:8px;
+border:1px solid #ddd;
+}
 
 
-<section class="cardSection">
+/* 전체 레이아웃 */
 
-<h2>📚 전체 보고양식</h2>
-<div id="allForms" class="grid"></div>
+.container{
+max-width:1100px;
+margin:auto;
+padding:25px;
+}
 
-</section>
-
-</div>
-
-
-<div id="results"></div>
+.cardSection{
+margin-bottom:40px;
+}
 
 
-<div id="modal" class="modal">
+/* 카드 */
 
-<div class="modalBox">
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:14px;
+}
 
-<div id="modalTitle" class="modalTitle"></div>
+.card{
+background:white;
+padding:14px;
+border-radius:12px;
+cursor:pointer;
+box-shadow:0 2px 6px rgba(0,0,0,0.08);
+transition:0.15s;
+}
 
-<pre id="modalContent"></pre>
+.card:hover{
+transform:translateY(-3px);
+box-shadow:0 8px 18px rgba(0,0,0,0.12);
+}
 
-<div class="modalButtons">
-<button onclick="copyText()">복사</button>
-<button onclick="closeModal()">닫기</button>
-</div>
+.cardTitle{
+font-weight:700;
+}
 
-</div>
+.cardCategory{
+font-size:12px;
+color:#888;
+margin-top:4px;
+}
 
-</div>
 
-<script src="script.js"></script>
+/* AI */
 
-</body>
-</html>
+.aiBox{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+
+textarea{
+flex:1;
+height:90px;
+padding:10px;
+border-radius:10px;
+border:1px solid #ddd;
+font-size:14px;
+}
+
+button{
+padding:10px 14px;
+border:none;
+border-radius:10px;
+background:#2f7cf6;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+
+/* 미리보기 */
+
+.preview{
+background:white;
+padding:14px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.08);
+white-space:pre-wrap;
+}
+
+
+/* 모달 */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.45);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modalBox{
+background:white;
+padding:25px;
+border-radius:14px;
+width:90%;
+max-width:520px;
+max-height:80vh;
+overflow:auto;
+}
+
+.modalTitle{
+font-size:20px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.modalButtons{
+margin-top:15px;
+display:flex;
+gap:10px;
+}
