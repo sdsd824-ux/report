@@ -1,126 +1,125 @@
-const sheetID="1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk";
-const sheetName="보고양식";
+const sheetID = "1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk";
+const sheetName = "보고양식";
 
-const url=`https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
 
-let forms=[];
+let forms = [];
 
 fetch(url)
 .then(r=>r.json())
 .then(data=>{
 
-forms=data.map(row=>({
-title:row.title||"",
-category:row.category||"기타",
-content:row.template||"",
-keywords:row.keywords||""
+forms = data.map(row=>({
+title: row.title || "",
+category: row.category || "기타",
+keywords: row.keywords || "",
+content: row.template || ""
 }));
 
-renderFolders();
+makeFolders();
+
 });
 
 
+/* 폴더 생성 */
 
-/* 폴더 */
+function makeFolders(){
 
-function renderFolders(){
+const box = document.getElementById("folders");
 
-const box=document.getElementById("folders");
+const categories = [...new Set(forms.map(f=>f.category))];
+
 box.innerHTML="";
 
-const categories={};
+categories.forEach(cat=>{
 
-forms.forEach(f=>{
-if(!categories[f.category]) categories[f.category]=[];
-categories[f.category].push(f);
-});
-
-for(let c in categories){
-
-const folder=document.createElement("div");
+const folder = document.createElement("div");
 folder.className="folder";
 
-const title=document.createElement("div");
+const title = document.createElement("div");
 title.className="folderTitle";
-title.innerText="📁 "+c;
+title.innerText="📁 "+cat;
 
-const items=document.createElement("div");
+const items = document.createElement("div");
 items.className="folderItems";
 
-title.onclick=()=>{
-items.style.display=
-items.style.display==="block"?"none":"block";
-};
+forms
+.filter(f=>f.category===cat)
+.forEach(f=>{
 
-categories[c].forEach(f=>{
-
-const item=document.createElement("div");
+const item = document.createElement("div");
 item.className="folderItem";
 item.innerText=f.title;
 
-item.onclick=()=>showModal(f);
+item.onclick=()=>showPreview(f);
 
 items.appendChild(item);
 
 });
 
+title.onclick=()=>{
+items.style.display =
+items.style.display==="block"?"none":"block";
+};
+
 folder.appendChild(title);
 folder.appendChild(items);
+
 box.appendChild(folder);
 
-}
+});
 
 }
-
 
 
 /* 검색 */
 
 document.getElementById("search").addEventListener("input",e=>{
 
-const q=e.target.value.toLowerCase();
-const box=document.getElementById("searchResults");
+const q = e.target.value.toLowerCase();
 
-box.innerHTML="";
+const results = document.getElementById("searchResults");
 
-if(!q) return;
+if(!q){
+results.innerHTML="";
+return;
+}
 
-forms
-.filter(f=>
-(f.title+f.category+f.keywords)
+const filtered = forms.filter(f=>
+(f.title+f.category+f.keywords+f.content)
 .toLowerCase()
 .includes(q)
-)
-.forEach(f=>{
+);
 
-const div=document.createElement("div");
-div.className="card";
+results.innerHTML="";
 
-div.innerHTML=`
-<div class="cardTitle">${f.title}</div>
-<div class="cardCategory">${f.category}</div>
-`;
+filtered.forEach(f=>{
 
-div.onclick=()=>showModal(f);
+const div = document.createElement("div");
+div.className="searchCard";
+div.innerText=f.title;
 
-box.appendChild(div);
+div.onclick=()=>showPreview(f);
 
-});
+results.appendChild(div);
 
 });
 
+});
 
 
-/* 모달 */
+/* 미리보기 */
 
-function showModal(f){
+function showPreview(f){
+
+const modal = document.getElementById("modal");
 
 document.getElementById("modalTitle").innerText=f.title;
 document.getElementById("modalContent").innerText=f.content;
 
 window.currentCopy=f.content;
 
-document.getElementById("modal").style.display="flex";
+modal.style.display="flex";
 
 }
 
@@ -128,42 +127,69 @@ function closeModal(){
 document.getElementById("modal").style.display="none";
 }
 
-
-
-/* 복사 */
-
 function copyText(){
 
 navigator.clipboard.writeText(window.currentCopy);
 
+closeModal();
+
 alert("복사 완료");
 
 }
+/* 자동 포커스 */
+document.getElementById("search").focus();
 
+/* Enter → 첫 결과 열기 */
+document.getElementById("search").addEventListener("keydown",e=>{
+if(e.key==="Enter"){
+const first=document.querySelector("#searchResults .simpleCard");
+if(first) first.click();
+}
+});
 
+/* 최근 사용 */
+function addRecent(f){
 
-/* 다크모드 */
+let recent=JSON.parse(localStorage.getItem("recent")||"[]");
 
-const toggle=document.getElementById("darkToggle");
+recent=recent.filter(r=>r.title!==f.title);
+recent.unshift(f);
 
-if(localStorage.getItem("dark")==="1")
-document.body.classList.add("dark");
+if(recent.length>5) recent.pop();
 
-toggle.onclick=()=>{
+localStorage.setItem("recent",JSON.stringify(recent));
 
-document.body.classList.toggle("dark");
+renderRecent();
+}
 
-localStorage.setItem(
-"dark",
-document.body.classList.contains("dark")?"1":"0"
-);
+function renderRecent(){
 
-};
+const box=document.getElementById("recent");
+if(!box) return;
 
+let recent=JSON.parse(localStorage.getItem("recent")||"[]");
 
+box.innerHTML="";
 
-/* ESC */
+recent.forEach(f=>{
+const div=document.createElement("div");
+div.className="simpleCard";
+div.innerText=f.title;
+div.onclick=()=>showPreview(f);
+box.appendChild(div);
+});
+}
 
+renderRecent();
+
+/* showPreview 안에 이 줄 추가 */
+const originalShowPreview=showPreview;
+showPreview=function(f){
+originalShowPreview(f);
+addRecent(f);
+}
+
+/* ESC 닫기 */
 document.addEventListener("keydown",e=>{
 if(e.key==="Escape") closeModal();
 });
