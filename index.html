@@ -2,27 +2,41 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>보고 시스템</title>
+<title>보고 양식</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header class="topBar">
-<h1>📋 보고 시스템</h1>
-<input id="search" placeholder="보고 양식 검색 (결제 / 견적 / 환자복)" autocomplete="off">
-</header>
+<div class="hero">
+
+<h1>📋 보고 양식</h1>
+
+<input id="search" placeholder="보고 양식 검색..." autocomplete="off">
+
+<div id="searchResults"></div>
+
+</div>
+
 
 <div class="container">
 
-<!-- 검색 결과 -->
-<section>
-<div id="searchResults"></div>
+<section id="favoritesSection" class="cardSection">
+<h2>⭐ 즐겨찾기</h2>
+<div id="favorites"></div>
 </section>
 
-<!-- AI -->
-<section class="cardSection">
+<section id="recentSection" class="cardSection">
+<h2>🕒 최근 사용</h2>
+<div id="recent"></div>
+</section>
 
+<section class="cardSection">
+<h2>📚 전체 보고 양식</h2>
+<div id="folders"></div>
+</section>
+
+<section class="cardSection">
 <h2>🤖 AI 보고문장 만들기</h2>
 
 <div class="aiBox">
@@ -31,16 +45,6 @@
 </div>
 
 <div id="aiResult" class="preview"></div>
-
-</section>
-
-<!-- 전체 양식 -->
-<section class="cardSection">
-
-<h2>📚 전체 보고양식</h2>
-
-<div id="folders"></div>
-
 </section>
 
 </div>
@@ -48,20 +52,14 @@
 
 <!-- 모달 -->
 <div id="modal" class="modal">
-
 <div class="modalBox">
-
 <div id="modalTitle" class="modalTitle"></div>
-
 <pre id="modalContent"></pre>
-
 <div class="modalButtons">
 <button onclick="copyText()">복사</button>
 <button onclick="closeModal()">닫기</button>
 </div>
-
 </div>
-
 </div>
 
 <script src="script.js"></script>
