@@ -1,39 +1,119 @@
-body{
-  font-family:Arial, sans-serif;
-  max-width:800px;
-  margin:auto;
-  padding:20px;
+const sheetURL =
+"https://docs.google.com/spreadsheets/d/1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk/gviz/tq?tqx=out:csv&sheet=보고양식";
+
+let forms = [];
+
+fetch(sheetURL)
+  .then(res => res.text())
+  .then(data => {
+
+    const rows = data.split("\n").slice(1);
+
+    forms = rows.map(row => {
+
+      const cols = row.split(",");
+
+      return {
+        title: cols[0],
+        category: cols[1],
+        keywords: cols[2],
+        content: cols.slice(3).join(",")
+      };
+
+    });
+
+    renderAllForms();
+
+  });
+
+function renderAllForms(){
+
+  const container = document.getElementById("allForms");
+  container.innerHTML = "";
+
+  forms.forEach(f => {
+    container.appendChild(createCard(f));
+  });
+
 }
 
-input, textarea{
-  width:100%;
-  padding:10px;
-  font-size:16px;
-  margin-top:10px;
+function createCard(form){
+
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML = "<b>" + form.title + "</b>";
+  div.onclick = function(){
+    showPreview(form.content);
+  };
+
+  return div;
+
 }
 
-.card{
-  border:1px solid #ddd;
-  padding:15px;
-  margin-top:10px;
-  border-radius:10px;
-  cursor:pointer;
+function showPreview(content){
+
+  const results = document.getElementById("results");
+
+  results.innerHTML =
+  '<div class="preview">' +
+  content +
+  '<br><button onclick="copyText(`'+content+'`)">복사</button>' +
+  '</div>';
+
 }
 
-.card:hover{
-  background:#f5f5f5;
+function copyText(text){
+
+  navigator.clipboard.writeText(text);
+  alert("복사됨");
+
 }
 
-.preview{
-  background:#f5f5f5;
-  padding:15px;
-  margin-top:10px;
-  white-space:pre-wrap;
-  border-radius:10px;
-}
+document.getElementById("search").addEventListener("input", function(e){
 
-button{
-  padding:10px 15px;
-  margin-top:10px;
-  cursor:pointer;
-}
+  const q = e.target.value.toLowerCase();
+
+  const filtered = forms.filter(function(f){
+
+    return (f.title + f.category + f.keywords + f.content)
+      .toLowerCase()
+      .includes(q);
+
+  });
+
+  const results = document.getElementById("results");
+  results.innerHTML = "";
+
+  filtered.forEach(function(f){
+    results.appendChild(createCard(f));
+  });
+
+});
+
+document.getElementById("aiBtn").addEventListener("click", async function(){
+
+  const input = document.getElementById("aiInput").value;
+
+  const prompt =
+  "다음 내용을 병원 원장에게 보고하는 업무 보고 형식으로 정리해줘.\n\n내용:\n" + input;
+
+  document.getElementById("aiResult").innerText = "AI 작성중...";
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer YOUR_API_KEY"
+    },
+    body:JSON.stringify({
+      model:"gpt-4o-mini",
+      messages:[{role:"user",content:prompt}]
+    })
+  });
+
+  const data = await response.json();
+
+  document.getElementById("aiResult").innerText =
+    data.choices[0].message.content;
+
+});
