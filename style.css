@@ -101,3 +101,17 @@ ${input}
   document.getElementById("aiResult").innerText =
     data.choices[0].message.content;
 });
+.card{
+font-size:18px;
+}
+
+.preview{
+font-size:16px;
+line-height:1.6;
+}
+
+pre{
+white-space:pre-wrap;
+font-family:inherit;
+}
+  
