@@ -1,11 +1,9 @@
 const sheetID = "1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk";
 const sheetName = "보고양식";
 
-const url =
-`https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
 
 let forms = [];
-let currentFiltered = [];
 
 fetch(url)
 .then(r=>r.json())
@@ -13,94 +11,115 @@ fetch(url)
 
 forms = data.map(row=>({
 title: row.title || "",
-category: row.category || "",
+category: row.category || "기타",
 keywords: row.keywords || "",
 content: row.template || ""
 }));
 
-makeCategoryTabs();
-renderAll();
+makeFolders();
 
 });
 
-function makeCategoryTabs(){
 
-const box = document.getElementById("categoryTabs");
+/* 폴더 생성 */
+
+function makeFolders(){
+
+const box = document.getElementById("folders");
+
 const categories = [...new Set(forms.map(f=>f.category))];
 
-box.innerHTML = `<button onclick="filterCategory('')">전체</button>`;
+box.innerHTML="";
 
-categories.forEach(c=>{
-if(!c) return;
-box.innerHTML +=
-`<button onclick="filterCategory('${c}')">${c}</button>`;
+categories.forEach(cat=>{
+
+const folder = document.createElement("div");
+folder.className="folder";
+
+const title = document.createElement("div");
+title.className="folderTitle";
+title.innerText="📁 "+cat;
+
+const items = document.createElement("div");
+items.className="folderItems";
+
+forms
+.filter(f=>f.category===cat)
+.forEach(f=>{
+
+const item = document.createElement("div");
+item.className="folderItem";
+item.innerText=f.title;
+
+item.onclick=()=>showPreview(f);
+
+items.appendChild(item);
+
+});
+
+title.onclick=()=>{
+items.style.display =
+items.style.display==="block"?"none":"block";
+};
+
+folder.appendChild(title);
+folder.appendChild(items);
+
+box.appendChild(folder);
+
 });
 
 }
 
-function filterCategory(cat){
 
-if(!cat){
-renderAll();
+/* 검색 */
+
+document.getElementById("search").addEventListener("input",e=>{
+
+const q = e.target.value.toLowerCase();
+
+const results = document.getElementById("searchResults");
+
+if(!q){
+results.innerHTML="";
 return;
 }
 
-const filtered = forms.filter(f=>f.category===cat);
-renderList(filtered);
+const filtered = forms.filter(f=>
+(f.title+f.category+f.keywords+f.content)
+.toLowerCase()
+.includes(q)
+);
 
-}
+results.innerHTML="";
 
-function renderAll(){
-renderList(forms);
-}
-
-function renderList(list){
-
-currentFiltered = list;
-
-const box = document.getElementById("allForms");
-box.innerHTML="";
-
-list.forEach(f=>{
-box.appendChild(makeCard(f));
-});
-
-}
-
-function makeCard(f){
+filtered.forEach(f=>{
 
 const div = document.createElement("div");
-div.className="card";
+div.className="searchCard";
+div.innerText=f.title;
 
-const fav = isFavorite(f.title) ? "⭐" : "☆";
+div.onclick=()=>showPreview(f);
 
-div.innerHTML = `
-<div class="cardTitle">${fav} ${f.title}</div>
-<div class="cardCategory">${f.category}</div>
-`;
+results.appendChild(div);
 
-div.onclick=()=>{
-showPreview(f);
-};
+});
 
-div.ondblclick=()=>{
-toggleFavorite(f.title);
-};
+});
 
-return div;
 
-}
+/* 미리보기 */
 
 function showPreview(f){
 
 const modal = document.getElementById("modal");
 
-document.getElementById("modalTitle").innerText = f.title;
-document.getElementById("modalContent").innerText = f.content;
+document.getElementById("modalTitle").innerText=f.title;
+document.getElementById("modalContent").innerText=f.content;
 
-window.currentCopy = f.content;
+window.currentCopy=f.content;
 
-modal.style.display = "flex";
+modal.style.display="flex";
 
 }
 
@@ -110,82 +129,10 @@ document.getElementById("modal").style.display="none";
 
 function copyText(){
 
-const text = window.currentCopy;
-
-navigator.clipboard.writeText(text);
+navigator.clipboard.writeText(window.currentCopy);
 
 closeModal();
 
 alert("복사 완료");
-
-}
-
-function highlight(text, keyword){
-
-if(!keyword) return text;
-
-const reg = new RegExp(`(${keyword})`, "gi");
-return text.replace(reg,"<mark>$1</mark>");
-
-}
-
-document.getElementById("search").addEventListener("input",e=>{
-
-const q = e.target.value.toLowerCase();
-
-const filtered = forms.filter(f=>
-(f.title+f.category+f.keywords+f.content)
-.toLowerCase()
-.includes(q)
-);
-
-currentFiltered = filtered;
-
-const box = document.getElementById("allForms");
-box.innerHTML="";
-
-filtered.forEach(f=>{
-
-const div = makeCard(f);
-
-div.querySelector(".cardTitle").innerHTML =
-highlight(div.querySelector(".cardTitle").innerText,q);
-
-box.appendChild(div);
-
-});
-
-});
-
-document.getElementById("search").addEventListener("keydown",e=>{
-
-if(e.key==="Enter" && currentFiltered.length>0){
-window.currentCopy = currentFiltered[0].content;
-navigator.clipboard.writeText(currentFiltered[0].content);
-alert("첫번째 결과 복사 완료");
-}
-
-});
-
-function toggleFavorite(title){
-
-let favs = JSON.parse(localStorage.getItem("favorites")||"[]");
-
-if(favs.includes(title)){
-favs = favs.filter(t=>t!==title);
-}else{
-favs.push(title);
-}
-
-localStorage.setItem("favorites",JSON.stringify(favs));
-
-renderAll();
-
-}
-
-function isFavorite(title){
-
-let favs = JSON.parse(localStorage.getItem("favorites")||"[]");
-return favs.includes(title);
 
 }
