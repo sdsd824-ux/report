@@ -8,63 +8,62 @@
 
 <body>
 
-<div class="topBar">
-<div class="logo">📋 보고 양식 검색</div>
+<header class="topBar">
+<h1>📋 보고 양식</h1>
+
+<input id="search" placeholder="보고양식 검색">
 <button id="darkToggle">🌙</button>
-</div>
+</header>
 
 
-<div class="hero">
-
-<input id="search" placeholder="보고 양식 검색..." autocomplete="off">
-
-<div id="searchResults"></div>
-
-</div>
+<!-- 검색결과 -->
+<div id="searchResults" class="grid"></div>
 
 
 <div class="container">
 
-<section>
-<h2>🕒 최근 사용</h2>
-<div id="recent"></div>
-</section>
+<section class="cardSection">
 
-<section>
-<h2>📚 전체 보고양식</h2>
-<div id="folders"></div>
-</section>
-
-<section>
-<h2>🤖 AI 보고서 만들기</h2>
+<h2>🤖 AI 보고문장 만들기</h2>
 
 <div class="aiBox">
 <textarea id="aiInput" placeholder="내용 입력"></textarea>
 <button id="aiBtn">AI 정리</button>
 </div>
 
-<div id="aiResult"></div>
+<div id="aiResult" class="preview"></div>
+
+</section>
+
+
+<section class="cardSection">
+
+<h2>📚 전체 보고양식</h2>
+<div id="folders"></div>
 
 </section>
 
 </div>
 
 
-<div id="previewPanel">
-<div id="previewTitle"></div>
-<pre id="previewContent"></pre>
-<button onclick="copyText()">복사</button>
-<button onclick="openModal()">확대</button>
-</div>
 
+<!-- 미리보기 -->
 
-<div id="modal">
+<div id="modal" class="modal">
+
 <div class="modalBox">
-<div id="modalTitle"></div>
+
+<div id="modalTitle" class="modalTitle"></div>
+
 <pre id="modalContent"></pre>
+
+<div class="modalButtons">
 <button onclick="copyText()">복사</button>
 <button onclick="closeModal()">닫기</button>
 </div>
+
+</div>
+
 </div>
 
 <script src="script.js"></script>
