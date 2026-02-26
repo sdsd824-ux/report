@@ -136,3 +136,60 @@ closeModal();
 alert("복사 완료");
 
 }
+/* 자동 포커스 */
+document.getElementById("search").focus();
+
+/* Enter → 첫 결과 열기 */
+document.getElementById("search").addEventListener("keydown",e=>{
+if(e.key==="Enter"){
+const first=document.querySelector("#searchResults .simpleCard");
+if(first) first.click();
+}
+});
+
+/* 최근 사용 */
+function addRecent(f){
+
+let recent=JSON.parse(localStorage.getItem("recent")||"[]");
+
+recent=recent.filter(r=>r.title!==f.title);
+recent.unshift(f);
+
+if(recent.length>5) recent.pop();
+
+localStorage.setItem("recent",JSON.stringify(recent));
+
+renderRecent();
+}
+
+function renderRecent(){
+
+const box=document.getElementById("recent");
+if(!box) return;
+
+let recent=JSON.parse(localStorage.getItem("recent")||"[]");
+
+box.innerHTML="";
+
+recent.forEach(f=>{
+const div=document.createElement("div");
+div.className="simpleCard";
+div.innerText=f.title;
+div.onclick=()=>showPreview(f);
+box.appendChild(div);
+});
+}
+
+renderRecent();
+
+/* showPreview 안에 이 줄 추가 */
+const originalShowPreview=showPreview;
+showPreview=function(f){
+originalShowPreview(f);
+addRecent(f);
+}
+
+/* ESC 닫기 */
+document.addEventListener("keydown",e=>{
+if(e.key==="Escape") closeModal();
+});
