@@ -1,119 +1,104 @@
-const sheetURL =
-"https://docs.google.com/spreadsheets/d/1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk/gviz/tq?tqx=out:csv&sheet=보고양식";
+const sheetID = "1yeh0HWHJKLxXzjAd0Zl9Bz1KawVrEtZLFcGePvKMcXk";
+const sheetName = "보고양식";
+
+const url =
+`https://opensheet.elk.sh/${sheetID}/${sheetName}`;
 
 let forms = [];
 
-fetch(sheetURL)
-  .then(res => res.text())
-  .then(data => {
+fetch(url)
+.then(r=>r.json())
+.then(data=>{
 
-    const rows = data.split("\n").slice(1);
+forms = data.map(row=>({
+title: row.title || "",
+category: row.category || "",
+keywords: row.keywords || "",
+content: row.template || ""
+}));
 
-    forms = rows.map(row => {
-
-      const cols = row.split(",");
-
-      return {
-        title: cols[0],
-        category: cols[1],
-        keywords: cols[2],
-        content: cols.slice(3).join(",")
-      };
-
-    });
-
-    renderAllForms();
-
-  });
-
-function renderAllForms(){
-
-  const container = document.getElementById("allForms");
-  container.innerHTML = "";
-
-  forms.forEach(f => {
-    container.appendChild(createCard(f));
-  });
-
-}
-
-function createCard(form){
-
-  const div = document.createElement("div");
-  div.className = "card";
-  div.innerHTML = "<b>" + form.title + "</b>";
-  div.onclick = function(){
-    showPreview(form.content);
-  };
-
-  return div;
-
-}
-
-function showPreview(content){
-
-  const results = document.getElementById("results");
-
-  results.innerHTML =
-  '<div class="preview">' +
-  content +
-  '<br><button onclick="copyText(`'+content+'`)">복사</button>' +
-  '</div>';
-
-}
-
-function copyText(text){
-
-  navigator.clipboard.writeText(text);
-  alert("복사됨");
-
-}
-
-document.getElementById("search").addEventListener("input", function(e){
-
-  const q = e.target.value.toLowerCase();
-
-  const filtered = forms.filter(function(f){
-
-    return (f.title + f.category + f.keywords + f.content)
-      .toLowerCase()
-      .includes(q);
-
-  });
-
-  const results = document.getElementById("results");
-  results.innerHTML = "";
-
-  filtered.forEach(function(f){
-    results.appendChild(createCard(f));
-  });
+renderAll();
 
 });
 
-document.getElementById("aiBtn").addEventListener("click", async function(){
+function renderAll(){
 
-  const input = document.getElementById("aiInput").value;
+const box = document.getElementById("allForms");
+box.innerHTML="";
 
-  const prompt =
-  "다음 내용을 병원 원장에게 보고하는 업무 보고 형식으로 정리해줘.\n\n내용:\n" + input;
+forms.forEach(f=>{
+box.appendChild(makeCard(f));
+});
 
-  document.getElementById("aiResult").innerText = "AI 작성중...";
+}
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":"Bearer YOUR_API_KEY"
-    },
-    body:JSON.stringify({
-      model:"gpt-4o-mini",
-      messages:[{role:"user",content:prompt}]
-    })
-  });
+function makeCard(f){
 
-  const data = await response.json();
+const div = document.createElement("div");
+div.className="card";
 
-  document.getElementById("aiResult").innerText =
-    data.choices[0].message.content;
+div.innerHTML = `
+<b>${f.title}</b>
+`;
+
+div.onclick=()=>{
+showPreview(f);
+};
+
+return div;
+
+}
+
+function showPreview(f){
+
+const results = document.getElementById("results");
+
+results.innerHTML = `
+<div class="preview">
+
+<b>${f.title}</b>
+
+<pre>${f.content}</pre>
+
+<button onclick="copyText()">복사</button>
+
+</div>
+`;
+
+window.currentCopy = f.content;
+
+}
+
+function copyText(){
+
+const text = window.currentCopy;
+
+const ta = document.createElement("textarea");
+ta.value=text;
+document.body.appendChild(ta);
+ta.select();
+document.execCommand("copy");
+ta.remove();
+
+alert("복사됨");
+
+}
+
+document.getElementById("search").addEventListener("input",e=>{
+
+const q = e.target.value.toLowerCase();
+
+const filtered = forms.filter(f=>
+(f.title+f.category+f.keywords+f.content)
+.toLowerCase()
+.includes(q)
+);
+
+const box = document.getElementById("results");
+box.innerHTML="";
+
+filtered.forEach(f=>{
+box.appendChild(makeCard(f));
+});
 
 });
