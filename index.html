@@ -2,15 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>보고 양식</title>
+<title>보고 양식 검색</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="hero">
+<div class="topBar">
+<div class="logo">📋 보고 양식 검색</div>
+<button id="darkToggle">🌙</button>
+</div>
 
-<h1>📋 보고 양식</h1>
+
+<div class="hero">
 
 <input id="search" placeholder="보고 양식 검색..." autocomplete="off">
 
@@ -21,44 +25,45 @@
 
 <div class="container">
 
-<section id="favoritesSection" class="cardSection">
-<h2>⭐ 즐겨찾기</h2>
-<div id="favorites"></div>
-</section>
-
-<section id="recentSection" class="cardSection">
+<section>
 <h2>🕒 최근 사용</h2>
 <div id="recent"></div>
 </section>
 
-<section class="cardSection">
-<h2>📚 전체 보고 양식</h2>
+<section>
+<h2>📚 전체 보고양식</h2>
 <div id="folders"></div>
 </section>
 
-<section class="cardSection">
-<h2>🤖 AI 보고문장 만들기</h2>
+<section>
+<h2>🤖 AI 보고서 만들기</h2>
 
 <div class="aiBox">
 <textarea id="aiInput" placeholder="내용 입력"></textarea>
 <button id="aiBtn">AI 정리</button>
 </div>
 
-<div id="aiResult" class="preview"></div>
+<div id="aiResult"></div>
+
 </section>
 
 </div>
 
 
-<!-- 모달 -->
-<div id="modal" class="modal">
+<div id="previewPanel">
+<div id="previewTitle"></div>
+<pre id="previewContent"></pre>
+<button onclick="copyText()">복사</button>
+<button onclick="openModal()">확대</button>
+</div>
+
+
+<div id="modal">
 <div class="modalBox">
-<div id="modalTitle" class="modalTitle"></div>
+<div id="modalTitle"></div>
 <pre id="modalContent"></pre>
-<div class="modalButtons">
 <button onclick="copyText()">복사</button>
 <button onclick="closeModal()">닫기</button>
-</div>
 </div>
 </div>
 
