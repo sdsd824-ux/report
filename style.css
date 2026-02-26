@@ -1,106 +1,128 @@
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:#f8f9fc;
-color:#222;
+:root{
+--bg:#f6f8fc;
+--card:#ffffff;
+--text:#222;
+--accent:#4c7cf0;
 }
 
-/* HERO */
+body.dark{
+--bg:#0f1115;
+--card:#1a1d24;
+--text:#e6e6e6;
+}
+
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+transition:0.25s;
+}
+
+/* top */
+
+.topBar{
+display:flex;
+justify-content:space-between;
+padding:16px 28px;
+font-size:20px;
+}
+
+#darkToggle{
+border:none;
+background:var(--card);
+padding:8px 14px;
+border-radius:10px;
+cursor:pointer;
+}
+
+/* search */
 
 .hero{
 text-align:center;
-padding:100px 20px 60px;
+padding:80px 20px 40px;
 }
 
-.hero h1{
-font-size:38px;
-margin-bottom:30px;
-}
-
-.hero input{
-width:600px;
+#search{
+width:650px;
 max-width:90%;
 padding:18px 22px;
 font-size:20px;
 border-radius:40px;
-border:1px solid #ddd;
-box-shadow:0 8px 25px rgba(0,0,0,0.08);
+border:1px solid #ccc;
 outline:none;
-transition:0.2s;
+background:var(--card);
+color:var(--text);
 }
 
-.hero input:focus{
-border:1px solid #4c7cf0;
-box-shadow:0 12px 30px rgba(0,0,0,0.15);
-}
+/* results */
 
 #searchResults{
-max-width:600px;
-margin:20px auto 0;
-text-align:left;
+max-width:650px;
+margin:20px auto;
 }
 
-/* 섹션 */
+.result{
+background:var(--card);
+padding:14px;
+border-radius:12px;
+margin-bottom:10px;
+cursor:pointer;
+}
+
+.result:hover{
+transform:translateY(-2px);
+}
+
+/* layout */
 
 .container{
 max-width:1000px;
 margin:auto;
-padding:20px 20px 80px;
+padding:20px;
 }
 
-.cardSection{
-margin-top:60px;
+section{
+margin-top:50px;
 }
 
-.cardSection h2{
-margin-bottom:15px;
-}
-
-/* 카드 */
-
-.simpleCard{
-background:white;
-padding:14px 16px;
-border-radius:14px;
-margin-bottom:10px;
-cursor:pointer;
-box-shadow:0 4px 14px rgba(0,0,0,0.08);
-transition:0.15s;
-}
-
-.simpleCard:hover{
-transform:translateY(-2px);
-box-shadow:0 6px 18px rgba(0,0,0,0.12);
-}
-
-/* 폴더 */
+/* folder */
 
 .folder{
-background:white;
-border-radius:16px;
-padding:16px;
-margin-bottom:16px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
+background:var(--card);
+padding:14px;
+border-radius:12px;
+margin-bottom:10px;
 }
 
 .folderTitle{
-font-weight:600;
 cursor:pointer;
+font-weight:600;
 }
 
 .folderItems{
-margin-top:12px;
 display:none;
+margin-top:10px;
 }
 
 .folderItem{
-padding:10px;
+padding:8px;
 border-radius:8px;
 cursor:pointer;
 }
 
 .folderItem:hover{
-background:#f1f4ff;
+background:rgba(120,120,120,0.15);
+}
+
+/* cards */
+
+.simpleCard{
+background:var(--card);
+padding:12px;
+border-radius:10px;
+margin-bottom:8px;
+cursor:pointer;
 }
 
 /* AI */
@@ -112,64 +134,61 @@ gap:10px;
 
 textarea{
 flex:1;
-height:120px;
-padding:14px;
-border-radius:12px;
-border:1px solid #ddd;
-resize:none;
+height:110px;
+border-radius:10px;
+border:1px solid #ccc;
+padding:10px;
+background:var(--card);
+color:var(--text);
 }
 
 button{
-background:#4c7cf0;
-color:white;
+background:var(--accent);
 border:none;
-border-radius:12px;
-padding:12px 18px;
+color:white;
+padding:10px 16px;
+border-radius:10px;
 cursor:pointer;
 }
 
-.preview{
-margin-top:15px;
-background:white;
-padding:18px;
-border-radius:14px;
-white-space:pre-wrap;
-box-shadow:0 4px 14px rgba(0,0,0,0.08);
+/* preview */
+
+#previewPanel{
+position:fixed;
+right:0;
+top:0;
+width:380px;
+height:100%;
+background:var(--card);
+box-shadow:-5px 0 20px rgba(0,0,0,0.15);
+padding:20px;
+overflow:auto;
 }
 
-/* 모달 */
+#previewTitle{
+font-size:20px;
+font-weight:700;
+margin-bottom:10px;
+}
 
-.modal{
+/* modal */
+
+#modal{
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.45);
 display:none;
 align-items:center;
 justify-content:center;
+background:rgba(0,0,0,0.45);
 }
 
 .modalBox{
-background:white;
-padding:30px;
-border-radius:16px;
-width:90%;
-max-width:550px;
-max-height:80vh;
-overflow:auto;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
-}
-
-.modalTitle{
-font-size:22px;
-font-weight:700;
-margin-bottom:12px;
-}
-
-.modalButtons{
-margin-top:20px;
-display:flex;
-gap:10px;
+background:var(--card);
+padding:25px;
+border-radius:14px;
+width:500px;
+max-width:90%;
 }
