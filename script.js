@@ -142,7 +142,7 @@ document.getElementById("search").focus();
 /* Enter → 첫 결과 열기 */
 document.getElementById("search").addEventListener("keydown",e=>{
 if(e.key==="Enter"){
-const first=document.querySelector("#searchResults .simpleCard");
+const first=document.querySelector("#searchResults .searchCard");
 if(first) first.click();
 }
 });
